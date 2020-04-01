@@ -1,0 +1,604 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+        integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+
+    <!-- Jquery -->
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
+        integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
+        crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"
+        integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1"
+        crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
+        integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
+        crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.19.0/axios.min.js"></script>
+
+    <!-- fontawesome -->
+    <script src="https://kit.fontawesome.com/56de11dc87.js"></script>
+
+    <!-- vue.js -->
+    <script src="https://cdn.jsdelivr.net/npm/vue"></script>
+
+    <!-- Styles -->
+    <link href="styles/styles.css" rel="stylesheet">
+
+    <!-- Scripts -->
+    <script type="text/javascript" src="scripts/classes.js"></script>
+    <script type="text/javascript" src="scripts/information.js"></script>
+    <title>Tournament Invasion</title>
+</head>
+
+<body>
+    <div id="app">
+        <!-- Navbar -->
+        <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+            <div class="container">
+                <a class="navbar-brand" href="#"><img src="images/logo.png" alt="Tournament Invasion" height="60"
+                        onclick="openSection('home')"></a>
+                <div id="right">
+                    <a id="loggedOut" @click="showLoginModal=true" style="display: block; color: white;">Login</a>
+                    <a id="loggedOut1" @click="showRegisterModal=true" style="display: block; color: white;">Registar</a>
+                    <a id="loggedIn" onclick="info.showProfileSection()" style="display: none; color: white;"><i class='fas fa-user-circle' aria-hidden='true'></i> Perfil</a>
+                    <a id="loggedIn1" onclick="setLoggedoutNav()" style="display: none; color: white;"><i class='fas fa-sign-out-alt' aria-hidden='true'></i> Logout</a>
+                </div>
+            </div>
+        </nav>
+        <main role="main" class="container text-center">
+            <!--Alert-->
+            <div class="alert alert-danger" id="alert" role="alert" style="display:none; margin-top: 5px;"></div>
+            <!--sections-->
+            <section id="home">
+                <p class="lead" style="margin-top: 50px; margin-bottom: 25px;">Bem vindo ao website dos maiores
+                    organizadores de torneios indoor. Gerimos várias modalidades como
+                    ping-pong, snooker e dardos.
+                </p>
+                <button class="btn btn-info btn-lg" @click="showCreateTorModal=true"
+                    onclick="info.getModalities(createModalitiesSelect)">
+                    <i class="fab fa-megaport"></i>&nbsp;&nbsp;Criar torneio
+                </button>
+                <div class="card-deck">
+                    <div class="card" onclick="info.showTor()">
+                        <img src="images/darts.jpg" class="card-img-top">
+                        <div class="card-body">
+                            <h5 class="card-title">Meus Torneios</h5>
+                            <p class="card-text">Vê aqui os teus torneios. Todos os torneios onde participas ou já
+                                participas-te.</p>
+                        </div>
+                    </div>
+                    <div class="card" onclick="info.showPlayers()">
+                        <img src="images/pingpong.jpg" class="card-img-top">
+                        <div class="card-body">
+                            <h5 class="card-title">Ranking Jogadores</h5>
+                            <p class="card-text">Vê todos os jogadores do Tournament Invasion e as suas respetivas
+                                estatistícas.</p>
+                        </div>
+                    </div>
+                    <div class="card" onclick="info.showPublicTor()">
+                        <img src="images/snooker.jpg" class="card-img-top">
+                        <div class="card-body">
+                            <h5 class="card-title">Torneios Publicos</h5>
+                            <p class="card-text">Entra num torneio perto de ti e conhece pessoas novas.</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            <section id="profile">
+                <h3 class="text-info">Perfil</h3>
+                <hr class="bg-info">
+                <div id="profileDiv">
+                    <div class="d-flex justify-content-center">
+                        <h6>ID de Utilizador:&nbsp;&nbsp;</h6><div id="profileId"></div>
+                    </div>
+                    <div class="d-flex justify-content-center">
+                        <h6>Username:&nbsp;&nbsp;</h6><div id="profileUsername"></div>
+                    </div>
+                    <div class="d-flex justify-content-center">
+                        <h6>E-Mail:&nbsp;&nbsp;</h6><div id="profileEmail"></div>
+                    </div>
+                    <div class="d-flex justify-content-center">
+                        <h6>Data de Nascimento:&nbsp;&nbsp;</h6><div id="profileDate"></div>
+                    </div>
+                    <div class="d-flex justify-content-center">
+                        <h6>Pontuação total:&nbsp;&nbsp;</h6><div id="profileScore"></div>
+                    </div>
+                </div>
+            </section>
+            <section id="tournaments">
+                <h3 class="text-info" id ="titleTor"></h3>
+                <hr class="bg-info" style="margin-bottom: 40px;">
+                <table id="torTable" class="table table-bordered table-striped">
+                    <thead>
+                        <tr class="text-center bg-info text-light">
+                            <th></th>
+                            <th>IDTorneio</th>
+                            <th>Modalidade</th>
+                            <th>Nome</th>
+                            <th>Progresso</th>
+                            <th>Data de Início</th>
+                            <th>Publico</th>
+                            <th>Tipo de Torneio</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                </table>
+                <div id="divButtonsTournament">
+                    <button class="btn btn-success" @click="showCreateTorModal=true"
+                        onclick="info.getModalities(createModalitiesSelect)">
+                        <i class="fas fa-plus-circle"></i>&nbsp;&nbsp;Adicionar torneio
+                    </button>
+                    <button class="btn btn-danger" @click="showDeleteTorModal=true">
+                        <i class="fas fa-trash-alt"></i>&nbsp;&nbsp;Remover torneio
+                    </button>
+                </div>
+            </section>
+            <section id="torInfoPlayers">
+                <h3 class="text-info" id="idTor"></h3>
+                <hr class="bg-info" style="margin-bottom: 40px;">
+                <div id="torInformation"></div>
+                <div id="torPlayers">
+                    <table class="table table-bordered table-striped" id="torPlayersTable">
+                        <thead>
+                            <tr class="text-center bg-info text-light">
+                                <th></th>
+                                <th>ID</th>
+                                <th>Name</th>
+                                <th>Score</th>
+                                <th>Idade</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                    </table>
+                    <div id="divButtonsPlayer">
+                        <button class="btn btn-success" @click="showAddPlayerModal=true">
+                            <i class="fas fa-plus-circle"></i>&nbsp;&nbsp;Adicionar jogador
+                        </button>
+                        <button class="btn btn-danger" @click="showDeletePlayerModal=true">
+                            <i class="fas fa-trash-alt"></i>&nbsp;&nbsp;Remover jogador
+                        </button>
+                    </div>
+                    <button id="btnGamesPlayer" class="btn btn-info btn-lg" style="margin: 10px;" onclick="info.showTorGames()"> Ver Jogos </button>
+                </div>
+            </section>
+            <section id="torInfoTeams">
+                <h3 class="text-info" id="idTorTeam"></h3>
+                <hr class="bg-info" style="margin-bottom: 40px;">
+                <div id="torInformationTeam"></div>
+                <table class="table table-bordered table-striped" id="torTeamsTable">
+                    <thead>
+                        <tr class="text-center bg-info text-light">
+                            <th></th>
+                            <th>ID</th>
+                            <th>Equipa</th>
+                            <th>Score</th>
+                        </tr>
+                    </thead>
+                </table>
+                <div id="divButtonsTeam">
+                    <button class="btn btn-success" @click="showAddTeamModal=true">
+                        <i class="fas fa-plus-circle"></i>&nbsp;&nbsp;Adicionar equipa
+                    </button>
+                    <button class="btn btn-danger" @click="showDeleteTeamModal=true">
+                        <i class="fas fa-trash-alt"></i>&nbsp;&nbsp;Remover equipa
+                    </button>
+                </div>
+                <button id="btnGamesTeam" class="btn btn-info btn-lg" style="margin: 10px;"> Ver Jogos </button>
+            </section>
+            <section id="playersRank">
+                <h3 class="text-info">Ranking Jogadores</h3>
+                <hr class="bg-info" style="margin-bottom: 40px;">
+                <table class="table table-bordered table-striped" id="playersTable">
+                    <thead>
+                        <tr class="text-center bg-info text-light">
+                            <th>ID</th>
+                            <th>Name</th>
+                            <th>Score</th>
+                            <th>Idade</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                </table>
+            </section>
+            <section id="teamsRank">
+                <h3 class="text-info">Ranking Equipas</h3>
+                <hr class="bg-info" style="margin-bottom: 40px;">
+                <table class="table table-bordered table-striped" id="teamsTable">
+                    <thead>
+                        <tr class="text-center bg-info text-light">
+                            <th>ID</th>
+                            <th>Equipa</th>
+                            <th>Score</th>
+                        </tr>
+                    </thead>
+                </table>
+            </section>
+            <section id="torGames">
+                <h3 class="text-info" id="idTorGames"></h3>
+                <hr class="bg-info" style="margin-bottom: 40px;">
+                <div id="torInformationGames"></div>
+                <table class="table table-bordered table-striped" id="torGamesTable">
+                    <thead>
+                        <tr class="text-center bg-info text-light">
+                            <th></th>
+                            <th>ID</th>
+                            <th>Data/hora</th>
+                            <th>Localização</th>
+                            <th>Elemento1</th>
+                            <th>Score1</th>
+                            <th></th>
+                            <th>Elemento2</th>
+                            <th>Score2</th>
+                        </tr>
+                    </thead>
+                </table>
+                <div id="divButtonsGame">
+                    <button class="btn btn-success" @click="showCreateGameModal=true" onclick="info.loadPlayers()">
+                        <i class="fas fa-plus-circle"></i>&nbsp;&nbsp;Adicionar jogo
+                    </button>
+                    <button class="btn btn-danger" @click="showDeleteGameModal=true">
+                        <i class="fas fa-trash-alt"></i>&nbsp;&nbsp;Remover jogo
+                    </button>
+                </div>
+            </section>
+            <!--forms-->
+            <!--Login Form-->
+            <div id="overlay" v-if="showLoginModal">
+                <div class="modal-dialog" id="panel-login">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title">Login</h5>
+                            <button type="button" class="close" @click="showLoginModal=false">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body p-6">
+                            <div class="form-group">
+                                <input type="text" name="username" id="username" class="form-control"
+                                    placeholder="Username" value="">
+                            </div>
+                            <div class="form-group">
+                                <input type="password" name="password" id="password" class="form-control"
+                                    placeholder="Password">
+                            </div>
+                            <div class="form-group">
+                                <input type="button" name="login-submit" id="login-submit"
+                                    class="btn btn-info btn-block btn-lg" value="Log In"
+                                    @click="showLoginModal=false" onclick="info.processingLogin()">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!--Register Form-->
+            <div id="overlay" v-if="showRegisterModal">
+                <div class="modal-dialog" id="panel-login">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title">Registar</h5>
+                            <button type="button" class="close" @click="showRegisterModal=false">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body p-6">
+                            <div class="form-group">
+                                <input type="text" name="username" id="registerUsername" class="form-control"
+                                    placeholder="Username" value="">
+                            </div>
+                            <div class="form-group">
+                                <input type="email" name="email" id="email" class="form-control"
+                                    placeholder="Email Address" value="">
+                            </div>
+                            <div class="form-group">
+                                <input id="date" type="date" name="birthDate" class="form-control form-control-lg"
+                                    placeholder="Birth Date" />
+                            </div>
+                            <div class="form-group">
+                                <input type="password" name="password" id="registerPassword" class="form-control"
+                                    placeholder="Password">
+                            </div>
+                            <div class="form-group">
+                                <input type="button" name="register-submit" id="register-submit"
+                                    class="btn btn-info btn-block btn-lg" value="Registar"
+                                    @click="showRegisterModal=false" onclick="info.processingNewUser('create')">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!--Create/edit tournament form-->
+            <div id="overlay" v-if="showCreateTorModal">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title">Criar Torneio</h5>
+                            <button type="button" class="close" @click="showCreateTorModal=false">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body p-6">
+                            <input id="id" type="hidden" />
+                            <div class="form-group">
+                                <input id="name" type="text" name="name" class="form-control form-control-lg"
+                                    placeholder="Nome" />
+                            </div>
+                            <div class="form-group">
+                                <input id="date" type="date" name="start_date" class="form-control form-control-lg"
+                                    placeholder="Selected Date" />
+                            </div>
+                            <div class="row mt-3">
+                                <div class="col-lg-6">
+                                    <h8 class="text-info">Modalidade</h8>
+                                </div>
+                                <div class="col-lg-6">
+                                    <div class="form-group">
+                                        <select id="modalities" class="form-control form-control-sm"></select>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row mt-3">
+                                <div class="col-lg-6">
+                                    <h8 class="text-info">Tipo de Competição</h8>
+                                </div>
+                                <div class="col-lg-6">
+                                    <div class="form-group">
+                                        <select id="team" class="form-control form-control-sm">
+                                            <option value="Equipas">Equipas</option>
+                                            <option value="Individual">Individual</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row mt-3">
+                                <div class="col-lg-6">
+                                    <h8 class="text-info">Participabilidade</h8>
+                                </div>
+                                <div class="col-lg-6">
+                                    <div class="form-group">
+                                        <select id="public" class="form-control form-control-sm">
+                                            <option value="public">publico</option>
+                                            <option value="private" selected>privado</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <input class="btn btn-info btn-block btn-lg" type="button"
+                                    @click="showCreateTorModal=false" onclick="info.processingTournaments('create');"
+                                    value="Criar Torneio" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!--Delete tournament form-->
+            <div id="overlay" v-if="showDeleteTorModal">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title">Apagar Torneio(s)</h5>
+                            <button type="button" class="close" @click="showDeleteTorModal=false">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body p-6">
+                            <h4 class="text-danger">Tem a certeza que pretende eliminar os torneios selecionado?</h4>
+                            <hr>
+                            <button class="btn btn-danger btn-lg" @click="showDeleteTorModal=false"
+                                onclick="info.deleteCheckedTournaments()">Sim</button>
+                            &nbsp;&nbsp;&nbsp;&nbsp;
+                            <button class="btn btn-success btn-lg" @click="showDeleteTorModal=false">Não</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!--Create player form-->
+            <div id="overlay" v-if="showAddPlayerModal">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title">Adicionar Jogador</h5>
+                            <button type="button" class="close" @click="showAddPlayerModal=false">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body p-6">
+                            <input id="id" type="hidden" />
+                            <div class="form-group">
+                                <input id="playerName" type="text" name="name" class="form-control form-control-lg"
+                                    placeholder="Username" />
+                            </div>
+                            <div class="form-group">
+                                <input class="btn btn-info btn-block btn-lg" type="button"
+                                    @click="showAddPlayerModal=false" onclick="info.processingPlayer();"
+                                    value="Adicionar Jogador" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!--Delete Player form-->
+            <div id="overlay" v-if="showDeletePlayerModal">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title">Apagar Jogador(es)</h5>
+                            <button type="button" class="close" @click="showDeletePlayerModal=false">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body p-6">
+                            <h4 class="text-danger">Tem a certeza que pretende eliminar os jogadores selecionado?</h4>
+                            <hr>
+                            <button class="btn btn-danger btn-lg" @click="showDeletePlayerModal=false"
+                                onclick="info.deleteCheckedPlayers()">Sim</button>
+                            &nbsp;&nbsp;&nbsp;&nbsp;
+                            <button class="btn btn-success btn-lg" @click="showDeletePlayerModal=false">Não</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!--Create team form-->
+            <div id="overlay" v-if="showAddTeamModal">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title">Adicionar Equipa</h5>
+                            <button type="button" class="close" @click="showAddTeamModal=false">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body p-6">
+                            <input id="id" type="hidden" />
+                            <div class="form-group">
+                                <input id="teamName" type="text" name="name" class="form-control form-control-lg"
+                                    placeholder="Name" />
+                            </div>
+                            <div class="form-group">
+                                <input class="btn btn-info btn-block btn-lg" type="button"
+                                    @click="showAddTeamModal=false" onclick="info.processingTeam();"
+                                    value="Adicionar Equipa" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!--Delete Team form-->
+            <div id="overlay" v-if="showDeleteTeamModal">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title">Apagar Equipa(s)</h5>
+                            <button type="button" class="close" @click="showDeleteTeamModal=false">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body p-6">
+                            <h4 class="text-danger">Tem a certeza que pretende eliminar a(s) equipa(s) selecionada(s)?</h4>
+                            <hr>
+                            <button class="btn btn-danger btn-lg" @click="showDeleteTeamModal=false"
+                                onclick="info.deleteCheckedTeams()">Sim</button>
+                            &nbsp;&nbsp;&nbsp;&nbsp;
+                            <button class="btn btn-success btn-lg" @click="showDeleteTeamModal=false">Não</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!--Create/edit tournament game form-->
+            <div id="overlay" v-if="showCreateGameModal">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title">Criar Jogo</h5>
+                                <button type="button" class="close" @click="showCreateGameModal=false">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <div class="modal-body p-6">
+                                <input id="id" type="hidden" />
+                                <div class="form-group">
+                                    <input id="game_date" type="datetime-local" name="game_date" class="form-control form-control-lg"
+                                        placeholder="Data de Jogo" />
+                                </div>
+                                <div class="form-group">
+                                    <input id="location" type="text" name="location" class="form-control form-control-lg"
+                                        placeholder="Localização" />
+                                </div>
+                                <div class="row mt-3">
+                                    <div class="col-lg-6">
+                                        <h8 class="text-info">Elemento 1: </h8>
+                                    </div>
+                                    <div class="col-lg-6">
+                                        <div class="form-group">
+                                            <select id="element1" class="form-control form-control-sm"></select>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <input id="score1" type="number" name="score1" class="form-control form-control-lg"
+                                        placeholder="Pontuação 1º Elemento" />
+                                </div>
+                                <div class="row mt-3">
+                                    <div class="col-lg-6">
+                                        <h8 class="text-info">Elemento 2: </h8>
+                                </div>
+                                    <div class="col-lg-6">
+                                        <div class="form-group">
+                                            <select id="element2" class="form-control form-control-sm"></select>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <input id="score2" type="number" name="score2" class="form-control form-control-lg"
+                                        placeholder="Pontuação 2º Elemento" />
+                                </div>
+                                <div class="form-group">
+                                    <input class="btn btn-info btn-block btn-lg" type="button"
+                                        @click="showCreateGameModal=false" onclick="info.processingGame('create');"
+                                        value="Criar Jogo" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!--Delete Game form-->
+                <div id="overlay" v-if="showDeleteGameModal">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title">Apagar Jogo(s)</h5>
+                                <button type="button" class="close" @click="showDeleteGameModal=false">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <div class="modal-body p-6">
+                                <h4 class="text-danger">Tem a certeza que pretende eliminar o(s) jogo(s) selecionado(s)?</h4>
+                                <hr>
+                                <button class="btn btn-danger btn-lg" @click="showDeleteGameModal=false"
+                                    onclick="info.deleteCheckedGames()">Sim</button>
+                                &nbsp;&nbsp;&nbsp;&nbsp;
+                                <button class="btn btn-success btn-lg" @click="showDeleteGameModal=false">Não</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+        </main>
+    </div>
+    <script>
+        var app = new Vue({
+            el: '#app',
+            data: {
+                showCreateTorModal: false,
+                showDeleteTorModal: false,
+                showAddPlayerModal: false,
+                showDeletePlayerModal: false,
+                showAddTeamModal: false,
+                showDeleteTeamModal: false,
+                showLoginModal: false,
+                showRegisterModal: false,
+                showCreateGameModal: false,
+                showDeleteGameModal: false
+            }
+        });
+        /*sections not shown*/
+        document.getElementById("profile").style.display = "none";
+        document.getElementById("tournaments").style.display = "none";
+        document.getElementById("playersRank").style.display = "none";
+        document.getElementById("torInfoPlayers").style.display = "none";
+        document.getElementById("teamsRank").style.display = "none";
+        document.getElementById("torInfoTeams").style.display = "none";
+        document.getElementById("torGames").style.display = "none";
+    </script>
+</body>
+
+<footer class="page-footer font-small text-center fixed-bottom">
+    <p>&copy; Copyright 2019 André Reis e Bruno Alves</p>
+</footer>
+
+</html>
